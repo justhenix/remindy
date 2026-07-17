@@ -2,12 +2,13 @@
 /**
  * remind CLI.
  *
- *  - `remind init`   : Phase 1 text stub — prints the planned bootstrap steps.
+ *  - `remind init`   : register MCP server in detected clients + drop project rule.
  *  - `remind doctor` : smoke-checks the resolved config, the LLM, and Supermemory Local.
  *  - `remind seed`   : loads the starter TASTE pack into the real Supermemory store.
  */
 import type { Compressor } from '../src/capture/compressor.js';
 import { LlmCompressor } from '../src/capture/llm-compressor.js';
+import { runInit } from '../src/install/init.js';
 import { SupermemoryLocalStore } from '../src/memory/supermemory-local-store.js';
 import { STARTER_PACK, seed } from '../src/starter/pack.js';
 import {
@@ -17,21 +18,7 @@ import {
   resolveSupermemoryConfig,
 } from '../src/config/index.js';
 
-function printInit(): void {
-  const lines = [
-    'remind init (Phase 1 — plan only, nothing is installed yet)',
-    '',
-    'Planned bootstrap steps:',
-    '  1. TODO: start Supermemory Local on this machine (embeddings + vector store).',
-    '  2. TODO: pull the local Ollama model used for compression.',
-    '  3. TODO: register the remind MCP server in your client config (stdio).',
-    '  4. TODO: drop a one-line project rule telling agents to call remind_recall',
-    '     before writing or editing code.',
-    '',
-    'Wire real backends via .env (see .env.example), then verify with `remind doctor`.',
-  ];
-  console.log(lines.join('\n'));
-}
+// printInit stub removed — real implementation lives in src/install/init.ts.
 
 /** Never reveal secret values — only whether they are present. */
 function mask(value: string | undefined): string {
@@ -120,7 +107,7 @@ async function main(argv: string[]): Promise<void> {
   const command = argv[0];
   switch (command) {
     case 'init':
-      printInit();
+      runInit(process.cwd());
       break;
     case 'doctor':
       await doctor();
