@@ -12,6 +12,9 @@ dist/
 # Private / personal working notes (never commit)
 personal/
 
+# Supermemory Local data dir (created if the server is ever run from the repo root)
+.supermemory/
+
 # Logs
 logs/
 *.log
