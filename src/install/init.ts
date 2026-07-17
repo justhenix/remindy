@@ -1,9 +1,9 @@
 /**
- * `remind init` — register remind MCP server in detected clients + drop project rule.
+ * `remindy init` — register the remindy MCP server in detected clients + drop project rule.
  *
  * Detects MCP-capable editors by their config directories, writes/merges
- * the remind server entry into each client's mcp.json, and appends a
- * one-line project rule telling agents to call remind_recall.
+ * the remindy server entry into each client's mcp.json, and appends a
+ * one-line project rule telling agents to call remindy_recall.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -24,6 +24,7 @@ const CLIENTS: McpClient[] = [
   { name: 'Kiro', detectDir: '.kiro', configPath: '.kiro/settings/mcp.json' },
   { name: 'Cursor', detectDir: '.cursor', configPath: '.cursor/mcp.json' },
   { name: 'Windsurf', detectDir: '.windsurf', configPath: '.windsurf/mcp.json' },
+  { name: 'Antigravity', detectDir: '.agents', configPath: '.agents/mcp_config.json' },
 ];
 
 // All supported clients use { "mcpServers": { ... } } format.
@@ -33,12 +34,12 @@ const SERVERS_KEY = 'mcpServers';
 // Project rule
 // ---------------------------------------------------------------------------
 
-const RULE_MARKER = '<!-- remind -->';
+const RULE_MARKER = '<!-- remindy -->';
 const RULE_SECTION = [
   '',
   `${RULE_MARKER}`,
-  '## remind',
-  'Always call the `remind_recall` MCP tool before writing or editing code.',
+  '## remindy',
+  'Always call the `remindy_recall` MCP tool before writing or editing code.',
 ].join('\n');
 
 /** Rule files checked in preference order. First found wins. */
@@ -55,7 +56,7 @@ function resolveServerPath(): string {
 }
 
 /**
- * Write (or merge) the remind entry into a client's MCP config.
+ * Write (or merge) the remindy entry into a client's MCP config.
  * Returns true if the config was written, false if client not detected.
  */
 function writeMcpConfig(
@@ -79,7 +80,7 @@ function writeMcpConfig(
   }
 
   const servers = (existing[SERVERS_KEY] as Record<string, unknown>) ?? {};
-  servers['remind'] = {
+  servers['remindy'] = {
     command: 'node',
     args: [serverPath],
   };
@@ -91,7 +92,7 @@ function writeMcpConfig(
 }
 
 /**
- * Append the one-line remind rule to the project's agent rules file.
+ * Append the one-line remindy rule to the project's agent rules file.
  * Returns a human-readable status string.
  */
 function dropProjectRule(projectDir: string): string {
@@ -129,10 +130,15 @@ function dropProjectRule(projectDir: string): string {
 // Public entry
 // ---------------------------------------------------------------------------
 
-export function runInit(projectDir: string): void {
+export interface InitOptions {
+  /** When true, `remindy seed` runs right after init, so callers can adjust guidance. */
+  willSeed?: boolean;
+}
+
+export function runInit(projectDir: string, opts: InitOptions = {}): void {
   const serverPath = resolveServerPath();
 
-  console.log('remind init');
+  console.log('remindy init');
   console.log('');
 
   // 1. MCP registration
@@ -143,7 +149,7 @@ export function runInit(projectDir: string): void {
       console.log(`  ✓ ${client.name} → ${client.configPath}`);
       registered++;
     } else {
-      console.log(`  · ${client.name} — not detected, skipped`);
+      console.log(`  · ${client.name}: not detected, skipped`);
     }
   }
   if (registered === 0) {
@@ -163,15 +169,27 @@ export function runInit(projectDir: string): void {
   }
   console.log('');
 
-  // 3. Supermemory guidance
-  console.log('Supermemory Local (required for persistent memory):');
-  console.log('  Start in WSL2:');
+  // 3. Supermemory guidance. The shared store makes cross-tool persistence real.
+  console.log('Supermemory Local (the shared store, required for cross-tool persistence):');
+  console.log('  Without it, memory is per-editor and forgotten on restart.');
+  console.log('  Start it (Unix binary; use WSL2 on Windows):');
   console.log('    curl -fsSL https://supermemory.ai/install | bash');
-  console.log('  Seed the starter taste pack:');
-  console.log('    npx remind seed');
+  if (!opts.willSeed) {
+    console.log('  Then seed rules inferred from THIS repo:');
+    console.log('    npx remindy seed');
+  }
   console.log('');
-  console.log('Verify everything:');
-  console.log('  npx remind doctor');
+
+  // 4. How you actually use it. remindy is invisible infra, not a CLI you keep running.
+  console.log('How you use it:');
+  console.log('  remindy is not a CLI you run. Your editor spawns its MCP server for you.');
+  console.log('  1. Restart / reload your editor so it picks up the new MCP server.');
+  console.log('  2. Just code with your AI agent. It now calls remindy_recall before');
+  console.log('     writing, and remindy_capture when you correct it.');
+  console.log('  3. See and edit your rules any time:  npx remindy dashboard');
+  console.log('');
+  console.log('Verify the backend (proves you are on Supermemory, not isolated memory):');
+  console.log('  npx remindy doctor');
   console.log('');
   console.log(`Server: ${serverPath}`);
 }
