@@ -63,8 +63,8 @@ npm run build
 # Start Supermemory Local (Unix binary; use WSL2 on Windows):
 curl -fsSL https://supermemory.ai/install | bash
 # Put SUPERMEMORY_API_KEY (printed on first boot) and your b.ai keys in .env (see .env.example)
-node dist/bin/remind.js doctor    # verify: all checks PASS, backend = Supermemory Local
-node dist/bin/remind.js init --seed
+node dist/bin/remindy.js doctor    # verify: all checks PASS, backend = Supermemory Local
+node dist/bin/remindy.js init --seed
 ```
 
 ## Build & test

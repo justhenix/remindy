@@ -4,7 +4,7 @@
   "description": "The portable taste & standards layer for AI coding agents.",
   "type": "module",
   "bin": {
-    "remindy": "dist/bin/remind.js"
+    "remindy": "dist/bin/remindy.js"
   },
   "files": [
     "dist"

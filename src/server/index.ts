@@ -13,16 +13,16 @@ import {
   resolveLlmConfig,
   resolveSupermemoryConfig,
 } from '../config/index.js';
-import { createRemindServer, RemindDeps } from './server.js';
+import { createRemindyServer, RemindyDeps } from './server.js';
 
-export { createRemindServer } from './server.js';
-export type { RemindDeps } from './server.js';
+export { createRemindyServer } from './server.js';
+export type { RemindyDeps } from './server.js';
 
 /**
  * Offline default dependency set (Phase 1 PoC): in-memory store seeded with the
  * starter pack + deterministic template compressor. Used by the test suite.
  */
-export async function createOfflineDeps(): Promise<RemindDeps> {
+export async function createOfflineDeps(): Promise<RemindyDeps> {
   const store = new InMemoryStore();
   await seed(store);
   return { store, compressor: new TemplateCompressor() };
@@ -37,7 +37,7 @@ export async function createOfflineDeps(): Promise<RemindDeps> {
  * The real store is intentionally NOT seeded here — seeding on every boot would spam
  * duplicates. Load the starter pack once with `remindy seed` instead.
  */
-export async function createDeps(): Promise<RemindDeps> {
+export async function createDeps(): Promise<RemindyDeps> {
   const smConfig = resolveSupermemoryConfig();
   const llmConfig = resolveLlmConfig();
 
@@ -99,7 +99,7 @@ export function describeBackend(): BackendStatus {
 /** Start the remindy MCP server over stdio using config-resolved dependencies. */
 export async function main(): Promise<void> {
   const deps = await createDeps();
-  const server = createRemindServer(deps);
+  const server = createRemindyServer(deps);
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

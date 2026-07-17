@@ -90,7 +90,7 @@ remindy/
     starter/       # curated starter pack rules
     install/       # `remindy init`: boot, MCP config, rule-line drop
     types.ts
-  bin/remind.ts    # CLI entry (npx remindy)
+  bin/remindy.ts    # CLI entry (npx remindy)
   test/
   package.json
 ```

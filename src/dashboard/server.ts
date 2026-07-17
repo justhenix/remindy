@@ -29,7 +29,7 @@ function sendJson(res: any, status: number, data: any) {
 
 export async function startDashboard(): Promise<void> {
   const { store, compressor } = await createDeps();
-  const port = Number(process.env.REMIND_DASHBOARD_PORT || 3456);
+  const port = Number(process.env.REMINDY_DASHBOARD_PORT || 3456);
 
   const server = createServer(async (req, res) => {
     const url = req.url || '/';

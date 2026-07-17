@@ -6,7 +6,7 @@ import type { Compressor } from '../capture/compressor.js';
 import { capture } from '../capture/capture.js';
 import { recall } from '../recall/recall.js';
 
-export interface RemindDeps {
+export interface RemindyDeps {
   store: MemoryStore;
   compressor: Compressor;
 }
@@ -20,7 +20,7 @@ const tagSchema = z.enum(TAGS as [string, ...string[]]);
  * TemplateCompressor) can be swapped for real backends (Supermemory Local +
  * LlmCompressor) via config, with no change to tool wiring.
  */
-export function createRemindServer(deps: RemindDeps): McpServer {
+export function createRemindyServer(deps: RemindyDeps): McpServer {
   const { store, compressor } = deps;
 
   const server = new McpServer({ name: 'remindy', version: '0.1.0' });
