@@ -120,3 +120,7 @@ remind/
 - Correct a standard ONCE in one MCP client via `remind_capture` (sloppy UI + AI-slop copy + vague commit).
 - Switch to a DIFFERENT MCP client and show it already respects all three standards from the same local memory.
 - Show the injected token count (~15) to prove the near-zero-cost claim.
+
+<!-- remind -->
+## remind
+Always call the `remind_recall` MCP tool before writing or editing code.
