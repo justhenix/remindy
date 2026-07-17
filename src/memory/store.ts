@@ -22,6 +22,10 @@ export interface MemoryStore {
    * recall path is identical. Returns at most `limit` hits sorted by descending relevance.
    */
   search(query: string, limit?: number): Promise<Array<{ memory: RichMemory; score: number }>>;
+  /**
+   * Delete a stored rule by its unique ID.
+   */
+  delete(id: string): Promise<void>;
 }
 
 /**

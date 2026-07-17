@@ -13,12 +13,15 @@ import { KeywordEmbedder } from '../recall/keyword-embedder.js';
  *  - Add:     client.add({ content, containerTag, customId, metadata }) (top-level.d.ts, AddParams)
  *  - List:    client.documents.list({ containerTags, limit }) -> { memories: [{ metadata }] }          (documents.d.ts)
  *
- * Storage-only role: Supermemory holds the rules; remind ranks and dedups locally.
+ * Storage-only role: Supermemory holds the rules; remindy ranks and dedups locally.
  * The human-readable rule goes in `content`; the structured RichMemory fields live in
  * `metadata` so we can rebuild the rule on the way out. `customId = m.id` gives upsert.
  * We deliberately do NOT use client.search.execute — see search() below.
  */
 
+// NOTE: kept as 'remind' (not 'remindy') on purpose — this is the Supermemory
+// containerTag existing stored rules were written under. Changing it would
+// silently orphan every rule already captured; not a user-facing string.
 const DEFAULT_CONTAINER_TAG = 'remind';
 /** documents.list is unpaginated here; cap the page for the offline-style all(). */
 const LIST_LIMIT = 100;
@@ -35,7 +38,7 @@ export class SupermemoryLocalStore implements MemoryStore {
 
   constructor(config: SupermemoryConfig, opts: SupermemoryStoreOptions = {}) {
     // Confirmed: constructor throws if apiKey is undefined, so callers gate on
-    // isSupermemoryConfigured() (or catch, as `remind doctor` does).
+    // isSupermemoryConfigured() (or catch, as `remindy doctor` does).
     this.client = new Supermemory({ apiKey: config.apiKey, baseURL: config.url });
     this.containerTag = opts.containerTag ?? DEFAULT_CONTAINER_TAG;
   }
@@ -50,11 +53,19 @@ export class SupermemoryLocalStore implements MemoryStore {
   }
 
   async update(m: RichMemory): Promise<void> {
-    // Upsert via customId: re-adding with the same customId overwrites the prior doc
-    // (AddParams.customId is confirmed in the .d.ts). Chosen over memories.updateMemory
-    // because that API keys off content/version chains, while we own a stable id and
-    // just need the burn count refreshed.
-    await this.add(m);
+    const res = await this.client.documents.list({
+      containerTags: [this.containerTag],
+      limit: LIST_LIMIT,
+    });
+    const doc = res.memories.find((d) => d.customId === m.id);
+    if (doc) {
+      await this.client.documents.update(doc.id, {
+        content: humanReadable(m),
+        metadata: toMetadata(m),
+      });
+    } else {
+      await this.add(m);
+    }
   }
 
   /**
@@ -103,6 +114,10 @@ export class SupermemoryLocalStore implements MemoryStore {
       }
     }
     return memories;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.client.documents.delete(id);
   }
 }
 

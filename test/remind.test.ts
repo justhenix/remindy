@@ -256,3 +256,22 @@ describe('token budget', () => {
     expect(result.rules.length).toBeLessThan(50);
   });
 });
+
+describe('delete rule', () => {
+  it('removes a rule from the store by ID', async () => {
+    const store = new InMemoryStore();
+    const rule: RichMemory = {
+      id: 'test-delete-id',
+      tag: 'UI',
+      antiPattern: 'inline styles',
+      fix: 'use design tokens',
+      burns: 1,
+      createdAt: new Date().toISOString(),
+    };
+    await store.add(rule);
+    expect(await store.all()).toHaveLength(1);
+
+    await store.delete('test-delete-id');
+    expect(await store.all()).toHaveLength(0);
+  });
+});

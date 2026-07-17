@@ -49,4 +49,11 @@ export class InMemoryStore implements MemoryStore {
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
   }
+
+  async delete(id: string): Promise<void> {
+    const idx = this.memories.findIndex((x) => x.id === id);
+    if (idx !== -1) {
+      this.memories.splice(idx, 1);
+    }
+  }
 }
