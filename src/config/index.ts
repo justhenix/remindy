@@ -12,16 +12,27 @@ import { config as loadDotenv } from 'dotenv';
  *   found regardless of the spawning process's cwd. This file compiles to
  *   dist/src/config/index.js, so the project root is three levels up.
  */
-loadDotenv({ quiet: true, path: resolve(import.meta.dirname, '../../../.env') });
+/**
+ * Absolute path to the project-root .env. This file compiles to
+ * dist/src/config/index.js, so the project root is three levels up. Exported so
+ * the BYOK writer targets the exact same file config reads from.
+ */
+export const ENV_PATH = resolve(import.meta.dirname, '../../../.env');
+
+loadDotenv({ quiet: true, path: ENV_PATH });
 
 /**
- * OpenAI-compatible LLM providers remind can route to (config only, no code change).
- * Scoped to what we actually run and have validated:
- *  - ollama: local, on-machine compression (the default; qwen2.5-coder:3b).
- *  - bai:    b.ai cloud (OpenAI-compatible; a real key is present and the API is verified).
- * Other providers were removed to avoid claiming untested paths.
+ * OpenAI-compatible LLM providers remindy can route to (config only, no code change).
+ * Every provider speaks the OpenAI chat-completions shape, so one client covers all:
+ *  - ollama:    local, on-machine compression (the default; qwen2.5-coder:3b).
+ *  - openai:    OpenAI cloud (api.openai.com).
+ *  - anthropic: Claude via Anthropic's OpenAI-compatible endpoint (api.anthropic.com/v1/).
+ *  - bai:       b.ai cloud (OpenAI-compatible).
  */
-export type LlmProviderName = 'ollama' | 'bai';
+export type LlmProviderName = 'ollama' | 'openai' | 'anthropic' | 'bai';
+
+/** Providers that require a real API key (everything except local Ollama). */
+export const CLOUD_PROVIDERS: readonly LlmProviderName[] = ['openai', 'anthropic', 'bai'];
 
 export interface LlmConfig {
   provider: LlmProviderName;
@@ -39,6 +50,8 @@ export interface SupermemoryConfig {
 // Verified base URLs (see provider docs).
 const BAI_DEFAULT_URL = 'https://api.b.ai/v1';
 const OLLAMA_DEFAULT_URL = 'http://localhost:11434';
+// Anthropic's OpenAI-compatible endpoint; the openai client appends /chat/completions.
+const ANTHROPIC_DEFAULT_URL = 'https://api.anthropic.com/v1/';
 const SUPERMEMORY_DEFAULT_URL = 'http://localhost:6767';
 
 /** Read a trimmed, non-empty env var, else undefined. */
@@ -50,7 +63,7 @@ function env(name: string): string | undefined {
 /** Resolve the active provider from LLM_PROVIDER; default ollama; unknown -> ollama. */
 export function resolveLlmProvider(): LlmProviderName {
   const raw = (env('LLM_PROVIDER') ?? 'ollama').toLowerCase();
-  if (raw === 'ollama' || raw === 'bai') {
+  if (raw === 'ollama' || raw === 'openai' || raw === 'anthropic' || raw === 'bai') {
     return raw;
   }
   return 'ollama';
@@ -67,6 +80,21 @@ export function resolveLlmConfig(): LlmConfig {
         // Ollama's OpenAI-compatible endpoint ignores the key but the client requires one.
         apiKey: 'ollama',
         model: env('OLLAMA_MODEL'),
+      };
+    case 'openai':
+      return {
+        provider,
+        // undefined => the openai client's own default (https://api.openai.com/v1).
+        baseURL: env('OPENAI_API_URL'),
+        apiKey: env('OPENAI_API_KEY'),
+        model: env('OPENAI_MODEL'),
+      };
+    case 'anthropic':
+      return {
+        provider,
+        baseURL: env('ANTHROPIC_API_URL') ?? ANTHROPIC_DEFAULT_URL,
+        apiKey: env('ANTHROPIC_API_KEY'),
+        model: env('ANTHROPIC_MODEL'),
       };
     case 'bai':
       return {
@@ -89,6 +117,24 @@ export function resolveSupermemoryConfig(): SupermemoryConfig {
 /** LLM usable only when we have both a key and a model to send. */
 export function isLlmConfigured(cfg: LlmConfig = resolveLlmConfig()): boolean {
   return Boolean(cfg.apiKey && cfg.model);
+}
+
+/** Secret-free view of the LLM config for display (CLI `config`, dashboard settings). */
+export interface LlmConfigView {
+  provider: LlmProviderName;
+  model: string | undefined;
+  baseURL: string | undefined;
+  /** True when a real API key is present (the 'ollama' placeholder does not count). */
+  apiKeySet: boolean;
+}
+
+export function viewLlmConfig(cfg: LlmConfig = resolveLlmConfig()): LlmConfigView {
+  return {
+    provider: cfg.provider,
+    model: cfg.model,
+    baseURL: cfg.baseURL,
+    apiKeySet: Boolean(cfg.apiKey && cfg.apiKey !== 'ollama'),
+  };
 }
 
 /** Supermemory Local requires an API key (printed on first boot); no key => offline. */
