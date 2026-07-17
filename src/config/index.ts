@@ -1,11 +1,18 @@
+import { resolve } from 'node:path';
 import { config as loadDotenv } from 'dotenv';
 
 /**
  * Load .env once, at import time. This NEVER throws: a missing variable simply
  * resolves to an offline default below. Config is read lazily by the resolvers
  * so tests that never touch config stay fully offline.
+ *
+ * - quiet: suppresses dotenv v17's stdout banner ("◇ injected env …") which
+ *   would corrupt the MCP stdio JSON-RPC stream.
+ * - path: anchored to the project root via import.meta.dirname so .env is
+ *   found regardless of the spawning process's cwd. This file compiles to
+ *   dist/src/config/index.js, so the project root is three levels up.
  */
-loadDotenv();
+loadDotenv({ quiet: true, path: resolve(import.meta.dirname, '../../../.env') });
 
 /**
  * OpenAI-compatible LLM providers remind can route to (config only, no code change).
