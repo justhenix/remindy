@@ -4,7 +4,7 @@ import type { MemoryStore } from '../memory/store.js';
 /**
  * Curated starter TASTE pack.
  *
- * These seed rules make remind_recall useful on first run and demonstrate the
+ * These seed rules make remindy_recall useful on first run and demonstrate the
  * taste/standards angle (things a linter can't catch). Contexts are included to
  * improve keyword recall. Fixed ids + createdAt keep tests deterministic.
  */

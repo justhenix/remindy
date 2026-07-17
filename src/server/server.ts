@@ -14,7 +14,7 @@ export interface RemindDeps {
 const tagSchema = z.enum(TAGS as [string, ...string[]]);
 
 /**
- * Build a remind MCP server from injected dependencies.
+ * Build a remindy MCP server from injected dependencies.
  *
  * Kept dependency-injected so the offline defaults (InMemoryStore +
  * TemplateCompressor) can be swapped for real backends (Supermemory Local +
@@ -23,10 +23,10 @@ const tagSchema = z.enum(TAGS as [string, ...string[]]);
 export function createRemindServer(deps: RemindDeps): McpServer {
   const { store, compressor } = deps;
 
-  const server = new McpServer({ name: 'remind', version: '0.1.0' });
+  const server = new McpServer({ name: 'remindy', version: '0.1.0' });
 
   server.registerTool(
-    'remind_recall',
+    'remindy_recall',
     {
       description:
         'ALWAYS call this before writing or editing any code. Returns your ' +
@@ -47,7 +47,7 @@ export function createRemindServer(deps: RemindDeps): McpServer {
   );
 
   server.registerTool(
-    'remind_capture',
+    'remindy_capture',
     {
       description:
         'Call when the user corrects a standard/anti-pattern, to remember it.',

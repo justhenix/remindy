@@ -1,5 +1,5 @@
 /**
- * Core domain types for remind.
+ * Core domain types for remindy.
  *
  * Two-layer data model (see AGENTS.md):
  *  - RichMemory: stored + embedded; used for match / dedup / regeneration.
@@ -30,13 +30,13 @@ export interface RichMemory {
  */
 export type CavemanRule = string;
 
-/** Result of remind_recall. */
+/** Result of remindy_recall. */
 export interface RecallResult {
   rules: CavemanRule[];
   tokens: number;
 }
 
-/** Result of remind_capture. */
+/** Result of remindy_capture. */
 export interface CaptureResult {
   id: string;
   caveman: CavemanRule;

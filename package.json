@@ -1,10 +1,10 @@
 {
-  "name": "remind",
+  "name": "remindy",
   "version": "0.1.0",
   "description": "The portable taste & standards layer for AI coding agents.",
   "type": "module",
   "bin": {
-    "remind": "dist/bin/remind.js"
+    "remindy": "dist/bin/remind.js"
   },
   "files": [
     "dist"
