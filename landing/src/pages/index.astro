@@ -7,7 +7,7 @@ import '../styles/global.css';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>remindy</title>
-    <meta name="description" content="Teach any MCP agent your standards once. It holds every code write to them, for about 15 tokens a turn." />
+    <meta name="description" content="Better models still don't know how you want code written, or remember it when you switch tools. remindy teaches any MCP agent your standards once and enforces them everywhere, for about 15 tokens a turn." />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -24,12 +24,12 @@ import '../styles/global.css';
     <div id="field-right" class="margin-field right" aria-hidden="true"></div>
 
     <!-- Contextual rule badges, anchored on the margin grid -->
-    <span class="badge" style="--bg:#3d7a45; top:192px; left:72px;"><b>UI</b>design tokens</span>
-    <span class="badge" style="--bg:#6d5bd0; top:384px; left:48px;"><b>CODE</b>compute in render</span>
+    <span class="badge" style="--bg:#6d5bd0; top:192px; left:72px;"><b>CODE</b>no invented APIs</span>
+    <span class="badge" style="--bg:#148f82; top:384px; left:48px;"><b>REQ</b>build only what's asked</span>
     <span class="badge" style="--bg:#2f6fb0; top:576px; left:96px;"><b>COMMIT</b>type(scope): msg</span>
-    <span class="badge" style="--bg:#b7791f; top:240px; right:72px;"><b>COPY</b>plain verbs</span>
-    <span class="badge" style="--bg:#c0453b; top:432px; right:48px;"><b>SEC</b>env vars, not code</span>
-    <span class="badge" style="--bg:#148f82; top:600px; right:96px;"><b>REQ</b>build what's specced</span>
+    <span class="badge" style="--bg:#3d7a45; top:240px; right:72px;"><b>UI</b>reuse the system</span>
+    <span class="badge" style="--bg:#c0453b; top:432px; right:48px;"><b>SEC</b>deny by default</span>
+    <span class="badge" style="--bg:#b7791f; top:600px; right:96px;"><b>COPY</b>plain, human words</span>
 
     <!-- Navbar -->
     <header class="relative z-10 w-full max-w-5xl mx-auto flex justify-between items-center px-6 py-8 md:py-10">
@@ -52,7 +52,7 @@ import '../styles/global.css';
         <span class="plus bl"></span><span class="plus br"></span>
 
         <span class="ri inline-block text-xs text-[var(--muted)] border border-[var(--color-line)] rounded-[4px] px-3 py-1 mb-8">
-          portable taste layer · MCP-native
+          portable taste layer · any model · MCP-native
         </span>
 
         <h1 class="ri font-hero text-4xl md:text-6xl tracking-tight leading-[1.02] mb-6" style="font-weight:600;">
@@ -85,10 +85,10 @@ import '../styles/global.css';
     <section id="what" data-anim="rise" class="relative z-10 w-full max-w-3xl mx-auto px-6 py-20 text-center">
       <span class="ri eyebrow mb-5">what it does</span>
       <h2 class="ri font-hero text-3xl md:text-5xl tracking-tight leading-[1.05] mb-5" style="font-weight:600;">
-        A memory layer for your taste.
+        Better models won't fix this.
       </h2>
       <p class="ri text-[15px] text-[var(--muted)] max-w-md mx-auto leading-relaxed">
-        Linters catch syntax. remindy catches taste, and feeds it to your agent before it writes.
+        They keep getting sharper, and still don't know how you want things done, or remember it when you switch tools. Linters catch syntax; remindy catches taste, and feeds it to your agent before every write.
       </p>
     </section>
 
@@ -99,6 +99,9 @@ import '../styles/global.css';
         <h3 class="ri font-hero text-2xl md:text-3xl tracking-tight" style="font-weight:600;">
           The loop, on every write.
         </h3>
+        <p class="ri text-[13px] text-[var(--muted)] leading-relaxed mt-3 max-w-md">
+          Seeded from your repo on day one. Sharper with every correction.
+        </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3">
         <div class="ri frame px-6 py-8">
@@ -116,7 +119,7 @@ import '../styles/global.css';
           <div class="ghost-num mb-4">02</div>
           <h4 class="font-hero text-base tracking-tight mb-2" style="font-weight:600;">Write</h4>
           <p class="text-xs text-[var(--muted)] leading-relaxed">
-            Codes inside your standards. No slop, no mess.
+            Writes to your standards, not its generic defaults.
           </p>
         </div>
         <div class="ri frame px-6 py-8 md:border-l-0">
@@ -142,9 +145,9 @@ import '../styles/global.css';
       <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-10">
         <div class="ri">
           <span class="feat-mark mb-4" style="--mk:#4ADE80;"></span>
-          <h4 class="font-hero text-base tracking-tight mt-3 mb-2" style="font-weight:600;">Universal via MCP</h4>
+          <h4 class="font-hero text-base tracking-tight mt-3 mb-2" style="font-weight:600;">Any model, any tool</h4>
           <p class="text-xs text-[var(--muted)] leading-relaxed">
-            One fix, respected across every MCP tool.
+            One fix, respected across every MCP agent. Model-agnostic by design.
           </p>
         </div>
         <div class="ri">

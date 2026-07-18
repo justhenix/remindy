@@ -195,7 +195,7 @@ export function getHtml(): string {
         <div class="panel-head"><span class="eyebrow">capture</span><div class="section-title">Teach it a standard</div></div>
         <div class="form-group">
           <label for="capture-mistake">Correction</label>
-          <input type="text" id="capture-mistake" placeholder="inline styles &rarr; use design tokens">
+          <input type="text" id="capture-mistake" placeholder="invented an API method &rarr; verify against the docs">
         </div>
         <div class="form-group">
           <label for="capture-tag">Tag</label>

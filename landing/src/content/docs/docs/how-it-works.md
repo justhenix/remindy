@@ -30,12 +30,12 @@ been corrected on it and drives ranking.
 Examples:
 
 ```text
-[UI]     inline styles → use design tokens (×3)
-[COPY]   "unlock/seamless/elevate" slop → plain verbs (×2)
-[COMMIT] "fix stuff" → conventional: type(scope): msg (×2)
-[SEC]    secrets in code → env vars + gitignore (×1)
-[CODE]   useEffect for derived state → compute in render (×4)
-[REQ]    unrequested features → build only what's specced (×1)
+[CODE]   invented APIs, guessed signatures → verify against the docs first (×4)
+[REQ]    gold-plating beyond the ask → build only what's specced; ask first (×3)
+[UI]     bespoke UI instead of the design system → reuse tokens + components (×3)
+[COPY]   "delve/seamless/robust" LLM slop → plain, concrete language (×2)
+[COMMIT] one giant, vague commit → small, conventional: type(scope): msg (×2)
+[SEC]    permissive defaults, missing authz → deny by default, least privilege (×1)
 ```
 
 ## What runs where
