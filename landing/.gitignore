@@ -25,3 +25,9 @@ pnpm-debug.log*
 
 # other
 .vscode
+
+# vercel
+.vercel
+
+.vercel
+.env*
