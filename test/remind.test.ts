@@ -43,7 +43,7 @@ describe('recall over the starter pack', () => {
     expect(result.rules.length).toBeGreaterThan(0);
     // The UI styling rule should be the most relevant hit.
     expect(result.rules[0]).toContain('[UI]');
-    expect(result.rules[0]).toContain('use design tokens');
+    expect(result.rules[0]).toContain('reuse');
     expect(result.tokens).toBeLessThanOrEqual(100);
   });
 });

@@ -34,10 +34,10 @@ class FakeReader implements RepoReader {
 }
 
 describe('detectUi', () => {
-  it('flags inline styles when tokens are absent', () => {
+  it('flags bespoke styling when the design system is absent', () => {
     const reader = new FakeReader({ 'src/App.tsx': 'const x = <div style={{ color: "red" }} />;' });
     expect(detectUi(reader)?.tag).toBe('UI');
-    expect(detectUi(reader)?.fix).toBe('use design tokens');
+    expect(detectUi(reader)?.fix).toBe('reuse tokens + components');
   });
   it('returns null when design tokens dominate', () => {
     const reader = new FakeReader({
@@ -59,24 +59,21 @@ describe('detectCopy', () => {
 });
 
 describe('detectCode', () => {
-  it('flags derived-state footgun when React is a dependency', () => {
-    const reader = new FakeReader({ 'package.json': JSON.stringify({ dependencies: { react: '^18.0.0' } }) });
-    const draft = detectCode(reader);
-    expect(draft?.tag).toBe('CODE');
-    expect(draft?.fix).toBe('compute in render');
-  });
   it('flags a loose tsconfig when strict is off', () => {
     const reader = new FakeReader({
-      'package.json': JSON.stringify({ dependencies: {} }),
       'tsconfig.json': JSON.stringify({ compilerOptions: { strict: false } }),
     });
+    expect(detectCode(reader)?.tag).toBe('CODE');
     expect(detectCode(reader)?.fix).toBe('enable strict');
   });
-  it('returns null for a strict, non-React project', () => {
+  it('returns null when tsconfig is strict', () => {
     const reader = new FakeReader({
-      'package.json': JSON.stringify({ dependencies: {} }),
       'tsconfig.json': JSON.stringify({ compilerOptions: { strict: true } }),
     });
+    expect(detectCode(reader)).toBeNull();
+  });
+  it('returns null on React presence alone (no dated derived-state rule)', () => {
+    const reader = new FakeReader({ 'package.json': JSON.stringify({ dependencies: { react: '^18.0.0' } }) });
     expect(detectCode(reader)).toBeNull();
   });
 });

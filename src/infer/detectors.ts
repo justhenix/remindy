@@ -42,9 +42,9 @@ export const detectUi: Detector = (reader) => {
   if (inlineHits > 0 && inlineHits > tokenHits) {
     return {
       tag: 'UI',
-      antiPattern: 'inline styles',
-      fix: 'use design tokens',
-      context: 'styling react components css color spacing theme',
+      antiPattern: 'bespoke UI instead of the design system',
+      fix: 'reuse tokens + components',
+      context: 'ui styling react components css design system tokens reuse consistency accessibility',
     };
   }
   return null;
@@ -64,6 +64,13 @@ const SLOP_WORDS = [
   'cutting-edge',
   'effortless',
   'unleash',
+  'delve',
+  'robust',
+  'leverage',
+  'tapestry',
+  'testament',
+  'boasts',
+  'ever-evolving',
 ];
 
 export const detectCopy: Detector = (reader) => {
@@ -86,35 +93,16 @@ export const detectCopy: Detector = (reader) => {
   if (found.size > 0) {
     return {
       tag: 'COPY',
-      antiPattern: '"unlock/seamless/elevate" slop',
-      fix: 'plain verbs',
-      context: 'copywriting marketing ai slop words headline microcopy',
+      antiPattern: '"delve/seamless/robust" LLM slop',
+      fix: 'plain, concrete language',
+      context: 'copywriting marketing llm ai slop words tone voice headline microcopy',
     };
   }
   return null;
 };
 
-/** CODE: React present (derived-state footgun) or a loose tsconfig. */
+/** CODE: a loose tsconfig (strict off) is the one statically-detectable signal. */
 export const detectCode: Detector = (reader) => {
-  const pkg = reader.readTextFile('package.json');
-  if (pkg !== null) {
-    let deps: Record<string, unknown> = {};
-    try {
-      const parsed = JSON.parse(pkg) as { dependencies?: Record<string, unknown>; devDependencies?: Record<string, unknown> };
-      deps = { ...parsed.dependencies, ...parsed.devDependencies };
-    } catch {
-      deps = {};
-    }
-    if ('react' in deps) {
-      return {
-        tag: 'CODE',
-        antiPattern: 'useEffect for derived state',
-        fix: 'compute in render',
-        context: 'react hooks derived state rendering',
-      };
-    }
-  }
-
   const tsconfig = reader.readTextFile('tsconfig.json');
   if (tsconfig !== null) {
     // Strict off (or absent) in a TS project → recommend enabling it.
@@ -190,9 +178,9 @@ export const detectCommit: Detector = (reader) => {
   if (conventional * 2 < log.length) {
     return {
       tag: 'COMMIT',
-      antiPattern: '"fix stuff"',
-      fix: 'conventional: type(scope): msg',
-      context: 'git commit message convention',
+      antiPattern: 'one giant, vague commit',
+      fix: 'small, conventional: type(scope): msg',
+      context: 'git commit message convention atomic scope',
     };
   }
   return null;
@@ -211,9 +199,9 @@ export const detectReq: Detector = (reader) => {
   if (hasSpecs) {
     return {
       tag: 'REQ',
-      antiPattern: 'unrequested features',
-      fix: 'build only what is specced',
-      context: 'yagni scope requirements speculative spec',
+      antiPattern: 'gold-plating beyond the ask',
+      fix: "build only what's specced; ask first",
+      context: 'yagni scope requirements speculative over-engineering unrequested spec',
     };
   }
   return null;
