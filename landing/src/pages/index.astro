@@ -287,43 +287,55 @@ import '../styles/global.css';
       function reveal(el) {
         const kind = el.dataset.anim;
         const items = el.querySelectorAll('.ri');
-        if (typeof anime === 'undefined') {
+        if (typeof anime === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           items.forEach(i => (i.style.opacity = 1));
           return;
         }
+        anime.remove(items);
         if (kind === 'rise') {
           anime({
             targets: items,
-            translateY: [42, 0],
-            scale: [0.96, 1],
+            translateY: [24, 0],
             opacity: [0, 1],
-            delay: anime.stagger(90, { start: 60 }),
-            duration: 900,
+            delay: anime.stagger(55, { start: 20 }),
+            duration: 560,
             easing: 'easeOutExpo'
           });
         } else if (kind === 'steps') {
           anime({
             targets: items,
-            translateY: [30, 0],
-            translateX: [-18, 0],
+            translateY: [20, 0],
+            translateX: [-10, 0],
             opacity: [0, 1],
-            delay: anime.stagger(110),
-            duration: 780,
+            delay: anime.stagger(70),
+            duration: 520,
             easing: 'easeOutQuint'
           });
         }
       }
 
+      // Hide items so a re-entry always animates from the start (consistency).
+      function resetItems(el) {
+        if (typeof anime === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        anime.remove(el.querySelectorAll('.ri'));
+        anime.set(el.querySelectorAll('.ri'), { opacity: 0, translateX: 0, translateY: 0 });
+      }
+
+      // Replay the reveal every time a section enters, reset when it leaves.
       const io = new IntersectionObserver((entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             reveal(e.target);
-            io.unobserve(e.target);
+          } else {
+            resetItems(e.target);
           }
         });
-      }, { threshold: 0.2 });
+      }, { threshold: 0.25 });
 
-      document.querySelectorAll('[data-anim]').forEach((el) => io.observe(el));
+      document.querySelectorAll('[data-anim]').forEach((el) => {
+        resetItems(el);
+        io.observe(el);
+      });
 
       // Colored badges live only on the hero: fade in on enter, out on leave
       const heroEl = document.getElementById('hero');
