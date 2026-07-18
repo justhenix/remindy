@@ -61,7 +61,7 @@ describe('capture + dedup', () => {
     );
     expect(first.burns).toBe(1);
     expect(first.caveman).toContain('[COMMIT]');
-    expect(first.caveman).toContain('(×1)');
+    expect(first.caveman).toContain('(x1)');
 
     // Near-duplicate: different case + punctuation, same meaning.
     const second = await capture(
@@ -72,7 +72,7 @@ describe('capture + dedup', () => {
     );
     expect(second.id).toBe(first.id);
     expect(second.burns).toBe(2);
-    expect(second.caveman).toContain('(×2)');
+    expect(second.caveman).toContain('(x2)');
 
     // Only one rule should exist after dedup.
     const all = await store.all();
@@ -127,7 +127,7 @@ describe('recall via store.search: burn weight affects ranking', () => {
 
     const result = await recall(store, 'slow endpoint');
 
-    expect(result.rules[0]).toContain('(×3)');
+    expect(result.rules[0]).toContain('(x3)');
     expect(result.rules.indexOf(renderCaveman(competitor))).toBeGreaterThan(0);
   });
 });

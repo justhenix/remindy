@@ -14,8 +14,8 @@ const starterByTag: ReadonlyMap<Tag, RichMemory> = new Map(
  * Merge inferred drafts over the curated starter pack, producing exactly one rule
  * per non-PERF tag, in fixed INFER_TAGS order.
  *
- *  - Tag has an inferred draft → use it (id `inferred-<tag>`, burns 1, fixed createdAt).
- *  - Tag has no draft          → fall back to the starter-pack rule verbatim.
+ *  - Tag has an inferred draft -> use it (id `inferred-<tag>`, burns 1, fixed createdAt).
+ *  - Tag has no draft          -> fall back to the starter-pack rule verbatim.
  *
  * The two never coexist, and the returned array is always exactly INFER_TAGS.length.
  */

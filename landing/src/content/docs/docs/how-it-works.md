@@ -5,17 +5,17 @@ description: The recall and capture loop, the caveman rule format, and where eac
 
 Two tools, one loop, on every code write:
 
-- **recall**: before writing, the agent pulls your standards, ranked by relevance × burn count, trimmed to ~100 tokens.
+- **recall**: before writing, the agent pulls your standards, ranked by relevance x burn count, trimmed to ~100 tokens.
 - **capture**: when you correct it, the fix is compressed to one line and stored (or its burn count bumps).
 
 ## Caveman rule format
 
 ```text
-[TAG] anti-pattern → fix (×N)
+[TAG] anti-pattern -> fix (xN)
 ```
 
-Every rule is one terse line. The `→ fix` is mandatory, a rule without a concrete fix
-is just nagging and gets ignored. The `×N` burn count records how many times you have
+Every rule is one terse line. The `-> fix` is mandatory, a rule without a concrete fix
+is just nagging and gets ignored. The `xN` burn count records how many times you have
 been corrected on it and drives ranking.
 
 | Part | Meaning |
@@ -23,17 +23,17 @@ been corrected on it and drives ranking.
 | `TAG` | One of `UI`, `COPY`, `CODE`, `COMMIT`, `SEC`, `REQ`, `PERF` |
 | `anti-pattern` | The habit to avoid |
 | `fix` | The concrete thing to do instead |
-| `×N` | **Burn count**: times you've been corrected on this rule. Higher burns rank higher in recall. |
+| `xN` | **Burn count**: times you've been corrected on this rule. Higher burns rank higher in recall. |
 
 Examples:
 
 ```text
-[CODE]   invented APIs, guessed signatures → verify against the docs first (×4)
-[REQ]    gold-plating beyond the ask → build only what's specced; ask first (×3)
-[UI]     bespoke UI instead of the design system → reuse tokens + components (×3)
-[COPY]   "delve/seamless/robust" LLM slop → plain, concrete language (×2)
-[COMMIT] one giant, vague commit → small, conventional: type(scope): msg (×2)
-[SEC]    permissive defaults, missing authz → deny by default, least privilege (×1)
+[CODE]   invented APIs, guessed signatures -> verify against the docs first (x4)
+[REQ]    gold-plating beyond the ask -> build only what's specced; ask first (x3)
+[UI]     bespoke UI instead of the design system -> reuse tokens + components (x3)
+[COPY]   "delve/seamless/robust" LLM slop -> plain, concrete language (x2)
+[COMMIT] one giant, vague commit -> small, conventional: type(scope): msg (x2)
+[SEC]    permissive defaults, missing authz -> deny by default, least privilege (x1)
 ```
 
 ## What runs where

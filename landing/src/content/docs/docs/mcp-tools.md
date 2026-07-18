@@ -14,7 +14,7 @@ Called **before** writing or editing code. Returns the known standards to avoid.
 | **Input** | `task_context: string` |
 | **Returns** | `{ rules: string[], tokens: number }` |
 
-**Flow:** `documents.list` → filter by tag scope → rank by relevance × burn count → trim to ~100 tokens → return formatted rules.
+**Flow:** `documents.list` -> filter by tag scope -> rank by relevance x burn count -> trim to ~100 tokens -> return formatted rules.
 
 The tool description is imperative on purpose: _always call before writing or editing code._
 
@@ -27,6 +27,6 @@ Fires on any sign of dissatisfaction, an explicit correction, or an implicit "me
 | **Input** | `mistake: string, tag?: Tag` |
 | **Returns** | `{ id: string, caveman: string, burns: number }` |
 
-**Flow:** model compresses to `[TAG] anti-pattern → fix` → dedup (same tag + matching anti-pattern/fix) → match bumps the burn count, else insert a new rule.
+**Flow:** model compresses to `[TAG] anti-pattern -> fix` -> dedup (same tag + matching anti-pattern/fix) -> match bumps the burn count, else insert a new rule.
 
 `Tag` ∈ `UI · COPY · CODE · COMMIT · SEC · REQ · PERF`.

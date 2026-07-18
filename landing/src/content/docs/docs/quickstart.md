@@ -46,7 +46,7 @@ it ranks higher next time.
 
 ```text
 you: don't use words like "unlock" or "seamless", keep copy plain
-→ captured  [COPY] "unlock/seamless" slop → plain verbs (×3)
+-> captured  [COPY] "unlock/seamless" slop -> plain verbs (x3)
 ```
 
 ## 4. Switch tools, same standard

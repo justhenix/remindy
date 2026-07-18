@@ -26,7 +26,7 @@ export interface RichMemory {
 
 /**
  * Caveman projection: the derived single-line string injected into agents.
- * Format: `[TAG] antiPattern → fix (×N)`. Represented as a plain string.
+ * Format: `[TAG] antiPattern -> fix (xN)`. Represented as a plain string.
  */
 export type CavemanRule = string;
 

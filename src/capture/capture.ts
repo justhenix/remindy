@@ -2,13 +2,13 @@ import type { CaptureResult, RichMemory, Tag } from '../types.js';
 import type { MemoryStore } from '../memory/store.js';
 import type { Compressor } from './compressor.js';
 
-/** Render a rich memory to its caveman projection: `[TAG] antiPattern → fix (×N)`. */
+/** Render a rich memory to its caveman projection: `[TAG] antiPattern -> fix (xN)`. */
 export function renderCaveman(m: RichMemory): string {
-  return `[${m.tag}] ${m.antiPattern} → ${m.fix} (×${m.burns})`;
+  return `[${m.tag}] ${m.antiPattern} -> ${m.fix} (x${m.burns})`;
 }
 
 /**
- * Capture orchestration: compress → find near-duplicate → insert-or-increment.
+ * Capture orchestration: compress -> find near-duplicate -> insert-or-increment.
  *
  *  - On a dedup hit: increment the burn count and persist, return the existing id.
  *  - Otherwise: create a new rich memory (burns = 1) and store it.

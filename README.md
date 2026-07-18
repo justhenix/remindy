@@ -38,17 +38,17 @@ Not a CLI you babysit; it's an MCP server your editor spawns.
 
 ## The loop
 
-- **recall**: agent pulls your known standards, ranked by relevance × burn count, trimmed to ~100 tokens.
+- **recall**: agent pulls your known standards, ranked by relevance x burn count, trimmed to ~100 tokens.
 - **capture**: a correction is compressed to one line, deduped, and stored (or its burn count bumps).
 
-Rule format: `[TAG] anti-pattern → fix (×N)` &nbsp;·&nbsp; `TAG ∈ {UI, COPY, CODE, COMMIT, SEC, REQ, PERF}`
+Rule format: `[TAG] anti-pattern -> fix (xN)` &nbsp;·&nbsp; `TAG ∈ {UI, COPY, CODE, COMMIT, SEC, REQ, PERF}`
 
-`×N` is the **burn count**: how many times you've been corrected on that rule. More burns means it ranks higher in recall, so your most-repeated mistakes surface first.
+`xN` is the **burn count**: how many times you've been corrected on that rule. More burns means it ranks higher in recall, so your most-repeated mistakes surface first.
 
 ```text
-[CODE] invented APIs, guessed signatures → verify against the docs first (×4)
-[COPY] "delve/seamless/robust" LLM slop → plain, concrete language (×2)
-[SEC]  permissive defaults, missing authz → deny by default, least privilege (×1)
+[CODE] invented APIs, guessed signatures -> verify against the docs first (x4)
+[COPY] "delve/seamless/robust" LLM slop -> plain, concrete language (x2)
+[SEC]  permissive defaults, missing authz -> deny by default, least privilege (x1)
 ```
 
 ## Install
@@ -113,7 +113,7 @@ Removes the `remindy` MCP entry and the project rule block from every detected e
 
 ```bash
 npm install    # no external services needed for tests
-npm run build  # tsc → dist/
+npm run build  # tsc -> dist/
 npm test       # vitest (single run)
 ```
 

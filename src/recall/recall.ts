@@ -28,9 +28,9 @@ function weight(relevance: number, burns: number): number {
 /**
  * Recall known standards relevant to a task context.
  *
- * store.search (keyword for the offline store, vector for Supermemory Local) →
- * apply burn weighting → drop non-positive → rank desc → take top N →
- * trim to the token budget → format as caveman rules.
+ * store.search (keyword for the offline store, vector for Supermemory Local) ->
+ * apply burn weighting -> drop non-positive -> rank desc -> take top N ->
+ * trim to the token budget -> format as caveman rules.
  * The returned `tokens` is guaranteed <= tokenBudget.
  */
 export async function recall(

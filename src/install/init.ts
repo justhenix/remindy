@@ -81,7 +81,7 @@ const RULE_FILES = ['AGENTS.md', 'CLAUDE.md', '.cursorrules'];
 
 /** Absolute path to the compiled MCP server entry point. */
 function resolveServerPath(): string {
-  // This file: dist/src/install/init.js → server: dist/src/server/index.js
+  // This file: dist/src/install/init.js -> server: dist/src/server/index.js
   return resolve(import.meta.dirname, '../server/index.js').replace(/\\/g, '/');
 }
 
@@ -173,7 +173,7 @@ export function runInit(projectDir: string, opts: InitOptions = {}): void {
   let registered = 0;
   for (const client of CLIENTS) {
     if (writeMcpConfig(projectDir, client, serverPath)) {
-      console.log(`  ✓ ${client.name} → ${client.configPath}`);
+      console.log(`  ✓ ${client.name} -> ${client.configPath}`);
       registered++;
     } else {
       console.log(`  · ${client.name}: not detected, skipped`);

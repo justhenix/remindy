@@ -14,7 +14,7 @@ const INFERRED_PREFIX = 'inferred-';
  * mismatch, empty fix, thrown error) keeps the deterministic detection text, so
  * the seed always succeeds.
  *
- *  - `polisher === null` → return rules unchanged.
+ *  - `polisher === null` -> return rules unchanged.
  *  - starter-sourced rules (no `inferred-` id) are never polished.
  */
 export async function polishRules(
@@ -56,7 +56,7 @@ async function polishOne(rule: RichMemory, polisher: Compressor): Promise<RichMe
  * Built for any configured cloud provider (OpenAI, Anthropic, b.ai), local Ollama
  * is skipped because it is too slow for a seed on CPU. Uses a throwing strict
  * fallback (same pattern as `remindy doctor`) so a live API/parse failure surfaces
- * as a caught error in polishOne → deterministic text kept, rather than silently
+ * as a caught error in polishOne -> deterministic text kept, rather than silently
  * degrading to the offline template compressor.
  */
 export function buildPolisher(): Compressor | null {

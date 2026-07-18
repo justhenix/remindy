@@ -195,7 +195,7 @@ export function getHtml(): string {
         <div class="panel-head"><span class="eyebrow">capture</span><div class="section-title">Teach it a standard</div></div>
         <div class="form-group">
           <label for="capture-mistake">Correction</label>
-          <input type="text" id="capture-mistake" placeholder="invented an API method &rarr; verify against the docs">
+          <input type="text" id="capture-mistake" placeholder="invented an API method -> verify against the docs">
         </div>
         <div class="form-group">
           <label for="capture-tag">Tag</label>
@@ -419,7 +419,7 @@ export function getHtml(): string {
         var td3 = document.createElement('td'); td3.className = 'editable'; td3.textContent = rule.fix;
         td3.addEventListener('click', function () { editCell(rule.id, 'fix', td3); });
         var td4 = document.createElement('td'); td4.style.textAlign = 'center'; td4.className = 'burn';
-        td4.textContent = '\\u00d7' + rule.burns;
+        td4.textContent = 'x' + rule.burns;
         var td5 = document.createElement('td'); td5.style.textAlign = 'right';
         var del = document.createElement('button'); del.className = 'btn-delete'; del.innerHTML = '\\u2715'; del.title = 'Delete';
         del.addEventListener('click', function () { deleteRule(rule.id); });

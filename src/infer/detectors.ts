@@ -105,7 +105,7 @@ export const detectCopy: Detector = (reader) => {
 export const detectCode: Detector = (reader) => {
   const tsconfig = reader.readTextFile('tsconfig.json');
   if (tsconfig !== null) {
-    // Strict off (or absent) in a TS project → recommend enabling it.
+    // Strict off (or absent) in a TS project -> recommend enabling it.
     const strictOn = /"strict"\s*:\s*true/.test(tsconfig);
     if (!strictOn) {
       return {
@@ -186,7 +186,7 @@ export const detectCommit: Detector = (reader) => {
   return null;
 };
 
-/** REQ: spec/requirements artifacts present → the team works spec-first. */
+/** REQ: spec/requirements artifacts present -> the team works spec-first. */
 export const detectReq: Detector = (reader) => {
   const files = reader.listFiles();
   const hasSpecs = files.some(
