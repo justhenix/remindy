@@ -35,12 +35,28 @@ const SERVERS_KEY = 'mcpServers';
 // ---------------------------------------------------------------------------
 
 const RULE_MARKER = '<!-- remindy -->';
+const RULE_END_MARKER = '<!-- /remindy -->';
 const RULE_SECTION = [
   '',
   `${RULE_MARKER}`,
   '## remindy',
-  'Always call the `remindy_recall` MCP tool before writing or editing code.',
+  'Before writing or editing code, call the `remindy_recall` MCP tool.',
+  'When the user shows any dissatisfaction with your output — "meh", "i hate it",',
+  '"why are you doing that", rewording your text, or reverting your work — call',
+  '`remindy_capture` with the anti-pattern and the fix. Catch the taste yourself;',
+  "don't wait to be told to remember it.",
+  `${RULE_END_MARKER}`,
 ].join('\n');
+
+/** Remove an existing remindy block so a fresh one can replace it. */
+function stripRuleBlock(content: string): string {
+  const start = content.indexOf(RULE_MARKER);
+  if (start === -1) return content;
+  const endIdx = content.indexOf(RULE_END_MARKER, start);
+  // Old installs have no end marker; the block was appended last, so drop to EOF.
+  const end = endIdx === -1 ? content.length : endIdx + RULE_END_MARKER.length;
+  return (content.slice(0, start) + content.slice(end)).trimEnd();
+}
 
 /** Rule files checked in preference order. First found wins. */
 const RULE_FILES = ['AGENTS.md', 'CLAUDE.md', '.cursorrules'];
@@ -115,15 +131,14 @@ function dropProjectRule(projectDir: string): string {
 
   if (existsSync(ruleFile)) {
     const content = readFileSync(ruleFile, 'utf8');
-    if (content.includes(RULE_MARKER)) {
-      return `already in ${relName}`;
-    }
-    writeFileSync(ruleFile, content.trimEnd() + '\n' + RULE_SECTION + '\n', 'utf8');
-  } else {
-    writeFileSync(ruleFile, RULE_SECTION.trimStart() + '\n', 'utf8');
+    const hadRule = content.includes(RULE_MARKER);
+    const cleaned = stripRuleBlock(content);
+    writeFileSync(ruleFile, cleaned.trimEnd() + '\n' + RULE_SECTION + '\n', 'utf8');
+    return hadRule ? `refreshed ${relName}` : `added ${relName}`;
   }
 
-  return relName;
+  writeFileSync(ruleFile, RULE_SECTION.trimStart() + '\n', 'utf8');
+  return `added ${relName}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -162,11 +177,7 @@ export function runInit(projectDir: string, opts: InitOptions = {}): void {
   // 2. Project rule
   console.log('Project rule:');
   const ruleResult = dropProjectRule(projectDir);
-  if (ruleResult.startsWith('already')) {
-    console.log(`  · ${ruleResult}`);
-  } else {
-    console.log(`  ✓ appended to ${ruleResult}`);
-  }
+  console.log(`  ✓ ${ruleResult}`);
   console.log('');
 
   // 3. Supermemory guidance. The shared store makes cross-tool persistence real.

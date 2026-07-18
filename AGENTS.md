@@ -121,3 +121,12 @@ remindy/
 - Correct a standard ONCE in one MCP client via `remindy_capture` (sloppy UI + AI-slop copy + vague commit).
 - Switch to a DIFFERENT MCP client and show it already respects all three standards from the same local memory.
 - Show the injected token count (~15) to prove the near-zero-cost claim.
+
+<!-- remindy -->
+## remindy
+Before writing or editing code, call the `remindy_recall` MCP tool.
+When the user shows any dissatisfaction with your output — "meh", "i hate it",
+"why are you doing that", rewording your text, or reverting your work — call
+`remindy_capture` with the anti-pattern and the fix. Catch the taste yourself;
+don't wait to be told to remember it.
+<!-- /remindy -->

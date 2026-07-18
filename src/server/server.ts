@@ -50,7 +50,9 @@ export function createRemindyServer(deps: RemindyDeps): McpServer {
     'remindy_capture',
     {
       description:
-        'Call when the user corrects a standard/anti-pattern, to remember it.',
+        'Call the moment the user is dissatisfied with your output — an explicit ' +
+        'correction, or an implicit signal like "meh", "i hate it", or "why are you ' +
+        'doing that". Stores the anti-pattern + fix so every tool avoids it next time.',
       inputSchema: { mistake: z.string(), tag: tagSchema.optional() },
     },
     async ({ mistake, tag }) => {
