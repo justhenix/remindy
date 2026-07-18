@@ -6,6 +6,7 @@ import { getHtml } from './ui.js';
 import { FAVICON_PNG_BUFFER } from './favicon.js';
 import { capture } from '../capture/capture.js';
 import { recall, estimateTokens } from '../recall/recall.js';
+import { seedFromRepo } from '../starter/seed-store.js';
 import type { RichMemory, Tag } from '../types.js';
 
 function parseJsonBody(req: any): Promise<any> {
@@ -145,6 +146,14 @@ export async function startDashboard(): Promise<void> {
           return;
         }
         const result = await capture(store, compressor, body.mistake, body.tag as Tag | undefined);
+        sendJson(res, 200, result);
+        return;
+      }
+
+      // 4a. POST /api/seed — one-click: load the repo-inferred starter pack.
+      // Idempotent (existing ids are skipped), so it is safe to click repeatedly.
+      if (url === '/api/seed' && method === 'POST') {
+        const result = await seedFromRepo(store, process.cwd());
         sendJson(res, 200, result);
         return;
       }

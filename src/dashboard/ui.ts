@@ -176,7 +176,7 @@ export function getHtml(): string {
       </div>
       <div class="actions-group">
         <span class="backend-badge" id="backend-badge" title="Active memory backend">checking&hellip;</span>
-        <a class="btn-ghost" id="btn-docs" href="https://github.com/justhenix/remindy#readme" target="_blank" rel="noopener" style="text-decoration:none;">Docs</a>
+        <a class="btn-ghost" id="btn-docs" href="https://remindy.henix.my.id/docs/" target="_blank" rel="noopener" style="text-decoration:none;">Docs</a>
         <button class="btn-ghost" id="btn-tour">Tour</button>
       </div>
     </header>
@@ -262,7 +262,10 @@ export function getHtml(): string {
     <div class="rules-section frame" id="tour-rules">
       <span class="plus tl"></span><span class="plus tr"></span><span class="plus bl"></span><span class="plus br"></span>
       <div class="rules-header">
-        <div><span class="eyebrow">taste pack</span><div class="section-title">Active standards</div></div>
+        <div style="display:flex; align-items:flex-end; gap:12px;">
+          <div><span class="eyebrow">taste pack</span><div class="section-title">Active standards</div></div>
+          <button class="btn-ghost" id="btn-seed" title="Load the repo-inferred starter pack (safe to re-run)">Load starter pack</button>
+        </div>
         <div class="tag-filters" id="tag-filters">
           <button class="filter-badge active" data-tag="all">All</button>
           <button class="filter-badge" data-tag="UI">UI</button>
@@ -285,7 +288,10 @@ export function getHtml(): string {
           </tr></thead>
           <tbody id="rules-tbody"></tbody>
         </table>
-        <div class="empty-state" id="empty-state" style="display:none;">No rules yet. Capture one, or run <b>remindy seed</b>.</div>
+        <div class="empty-state" id="empty-state" style="display:none;">
+          <div>Memory is empty — nothing to recall yet.</div>
+          <button class="btn-action" id="btn-seed-empty" style="margin-top:14px;">Load starter pack</button>
+        </div>
       </div>
     </div>
   </div>
@@ -376,7 +382,18 @@ export function getHtml(): string {
     }
     el('provider-select').addEventListener('change', function () { applyProviderHints(false); });
 
+    function updateFilterCounts() {
+      var counts = {}, total = state.rules.length;
+      state.rules.forEach(function (r) { counts[r.tag] = (counts[r.tag] || 0) + 1; });
+      document.querySelectorAll('.filter-badge').forEach(function (b) {
+        var tag = b.getAttribute('data-tag');
+        var n = tag === 'all' ? total : (counts[tag] || 0);
+        b.textContent = (tag === 'all' ? 'All' : tag) + ' ' + n;
+      });
+    }
+
     function renderRules() {
+      updateFilterCounts();
       var list = state.rules.slice();
       if (state.filter !== 'all') list = list.filter(function (r) { return r.tag === state.filter; });
       list.sort(function (a, b) {
@@ -452,6 +469,21 @@ export function getHtml(): string {
         if (res.ok) { toast('Captured'); el('capture-mistake').value = ''; loadData(); } else { toast('Capture failed'); }
       } catch (e) { toast('Server down'); } finally { this.disabled = false; }
     });
+
+    async function seedPack(btn) {
+      if (btn) btn.disabled = true;
+      toast('Seeding starter pack\\u2026');
+      try {
+        var res = await fetch('/api/seed', { method: 'POST' });
+        var d = await res.json();
+        if (res.ok) {
+          toast(d.added > 0 ? 'Seeded ' + d.added + ' rule' + (d.added === 1 ? '' : 's') : 'Already seeded');
+          loadData();
+        } else { toast('Seed failed'); }
+      } catch (e) { toast('Server down'); } finally { if (btn) btn.disabled = false; }
+    }
+    el('btn-seed').addEventListener('click', function () { seedPack(this); });
+    el('btn-seed-empty').addEventListener('click', function () { seedPack(this); });
 
     el('btn-recall').addEventListener('click', async function () {
       var ctx = el('recall-context').value.trim();

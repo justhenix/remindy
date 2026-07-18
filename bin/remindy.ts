@@ -14,10 +14,7 @@ import { runInit } from '../src/install/init.js';
 import { describeBackend } from '../src/server/index.js';
 import { startDashboard } from '../src/dashboard/server.js';
 import { SupermemoryLocalStore } from '../src/memory/supermemory-local-store.js';
-import { NodeRepoReader } from '../src/infer/reader.js';
-import { inferRepoRules } from '../src/infer/inferrer.js';
-import { mergeWithStarter } from '../src/infer/merge.js';
-import { buildPolisher, polishRules } from '../src/infer/polish.js';
+import { seedFromRepo } from '../src/starter/seed-store.js';
 import {
   isLlmConfigured,
   isSupermemoryConfigured,
@@ -89,7 +86,7 @@ async function doctor(): Promise<void> {
     console.log(`  PASS: reachable at ${sm.url}`);
   } catch (err) {
     console.log(`  FAIL: unreachable at ${sm.url} (${errMessage(err)})`);
-    console.log('         hint: start it with `npx supermemory local`');
+    console.log('         hint: start it with `supermemory-server` (inside WSL2 on Windows)');
   }
   console.log('');
 
@@ -124,23 +121,15 @@ async function seedStore(): Promise<void> {
     return;
   }
 
-  const reader = new NodeRepoReader(process.cwd());
-  const drafts = inferRepoRules(reader);
-  const merged = mergeWithStarter(drafts);
-  const rules = await polishRules(merged, buildPolisher());
-
   const store = new SupermemoryLocalStore(sm);
-  for (const rule of rules) {
-    await store.add(rule);
-  }
+  const result = await seedFromRepo(store, process.cwd());
 
-  const inferred = rules.filter((r) => r.id.startsWith('inferred-')).map((r) => r.tag);
-  const starter = rules.filter((r) => !r.id.startsWith('inferred-')).map((r) => r.tag);
   console.log(
-    `remindy seed: stored ${rules.length} rules into Supermemory Local @ ${sm.url}`,
+    `remindy seed: stored ${result.added} rules into Supermemory Local @ ${sm.url}` +
+      (result.added < result.total ? ` (${result.total - result.added} already present)` : ''),
   );
-  console.log(`  inferred from repo: ${inferred.length ? inferred.join(', ') : '(none)'}`);
-  console.log(`  starter fallback:   ${starter.length ? starter.join(', ') : '(none)'}`);
+  console.log(`  inferred from repo: ${result.inferred.length ? result.inferred.join(', ') : '(none)'}`);
+  console.log(`  starter fallback:   ${result.starter.length ? result.starter.join(', ') : '(none)'}`);
 }
 
 /** Parse `--flag value` pairs into a map. Values are never logged. */
