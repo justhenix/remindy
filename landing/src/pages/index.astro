@@ -13,8 +13,36 @@ import '../styles/global.css';
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <style>
+      /* One focused section per viewport, snap on scroll. */
+      html {
+        scroll-snap-type: y proximity;
+        scroll-behavior: smooth;
+      }
+      .snap-section {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        scroll-snap-align: center;
+        position: relative;
+        z-index: 10;
+      }
+      .site-nav {
+        background: linear-gradient(to bottom, rgba(12, 12, 12, 0.9), rgba(12, 12, 12, 0));
+        backdrop-filter: blur(3px);
+      }
+      /* Never trap scrolling on short or touch screens. */
+      @media (max-width: 768px), (max-height: 520px) {
+        html { scroll-snap-type: none; }
+        .snap-section { min-height: auto; padding-top: 92px; padding-bottom: 72px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-snap-type: none; scroll-behavior: auto; }
+      }
+    </style>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body>
 
     <!-- Full-bleed architectural grid -->
     <div class="canvas-grid" aria-hidden="true"></div>
@@ -32,22 +60,24 @@ import '../styles/global.css';
     <span class="badge" style="--bg:#b7791f; top:600px; right:96px;"><b>COPY</b>plain, human words</span>
 
     <!-- Navbar -->
-    <header class="relative z-10 w-full max-w-5xl mx-auto flex justify-between items-center px-6 py-8 md:py-10">
-      <div class="flex items-baseline gap-3">
-        <span class="font-logo text-xl tracking-tight lowercase" style="font-weight:700;">remindy</span>
-        <span class="hidden sm:inline text-xs text-[var(--muted)]">taste & standards layer for AI coding agents</span>
+    <header class="site-nav fixed top-0 left-0 right-0 z-20">
+      <div class="w-full max-w-5xl mx-auto flex justify-between items-center px-6 py-4">
+        <div class="flex items-baseline gap-3">
+          <span class="font-logo text-xl tracking-tight lowercase" style="font-weight:700;">remindy</span>
+          <span class="hidden sm:inline text-xs text-[var(--muted)]">taste & standards layer for AI coding agents</span>
+        </div>
+        <nav class="flex items-center gap-6 text-xs text-[var(--muted)]">
+          <a href="#what" class="hover:text-[var(--ink)] transition-colors">what it does</a>
+          <a href="#how" class="hover:text-[var(--ink)] transition-colors hidden sm:inline">how it works</a>
+          <a href="/docs" class="hover:text-[var(--ink)] transition-colors">docs</a>
+          <a href="https://github.com/justhenix/remindy" class="hover:text-[var(--ink)] transition-colors">github</a>
+        </nav>
       </div>
-      <nav class="flex items-center gap-6 text-xs text-[var(--muted)]">
-        <a href="#what" class="hover:text-[var(--ink)] transition-colors">what it does</a>
-        <a href="#how" class="hover:text-[var(--ink)] transition-colors hidden sm:inline">how it works</a>
-        <a href="/docs" class="hover:text-[var(--ink)] transition-colors">docs</a>
-        <a href="https://github.com/justhenix/remindy" class="hover:text-[var(--ink)] transition-colors">github</a>
-      </nav>
     </header>
 
     <!-- Hero -->
-    <main class="relative z-10 flex justify-center px-6 pt-6 pb-20">
-      <section id="hero" data-anim="rise" class="frame w-full max-w-4xl px-8 md:px-16 py-14 md:py-16 text-center">
+    <main class="snap-section px-6">
+      <section id="hero" data-anim="rise" class="frame w-full max-w-4xl mx-auto px-8 md:px-16 py-12 md:py-14 text-center">
         <span class="plus tl"></span><span class="plus tr"></span>
         <span class="plus bl"></span><span class="plus br"></span>
 
@@ -82,7 +112,7 @@ import '../styles/global.css';
     </main>
 
     <!-- What it does -->
-    <section id="what" data-anim="rise" class="relative z-10 w-full max-w-3xl mx-auto px-6 py-20 text-center">
+    <section id="what" data-anim="rise" class="snap-section w-full max-w-3xl mx-auto px-6 text-center">
       <span class="ri eyebrow mb-5">what it does</span>
       <h2 class="ri font-hero text-3xl md:text-5xl tracking-tight leading-[1.05] mb-5" style="font-weight:600;">
         Better models won't fix this.
@@ -93,7 +123,7 @@ import '../styles/global.css';
     </section>
 
     <!-- How it works -->
-    <section id="how" data-anim="steps" class="relative z-10 w-full max-w-4xl mx-auto px-6 py-16">
+    <section id="how" data-anim="steps" class="snap-section w-full max-w-4xl mx-auto px-6">
       <div class="mb-10">
         <span class="ri eyebrow block mb-3">how it works</span>
         <h3 class="ri font-hero text-2xl md:text-3xl tracking-tight" style="font-weight:600;">
@@ -135,7 +165,7 @@ import '../styles/global.css';
     </section>
 
     <!-- Why remindy -->
-    <section id="features" data-anim="steps" class="relative z-10 w-full max-w-4xl mx-auto px-6 py-16 pb-24">
+    <section id="features" data-anim="steps" class="snap-section w-full max-w-4xl mx-auto px-6">
       <div class="mb-10">
         <span class="ri eyebrow block mb-3">why remindy</span>
         <h3 class="ri font-hero text-2xl md:text-3xl tracking-tight" style="font-weight:600;">
@@ -168,8 +198,8 @@ import '../styles/global.css';
     </section>
 
     <!-- Final CTA -->
-    <section id="start" data-anim="rise" class="relative z-10 w-full max-w-4xl mx-auto px-6 pb-24">
-      <div class="ri frame px-8 md:px-16 py-16 md:py-20 text-center">
+    <section id="start" data-anim="rise" class="snap-section w-full max-w-4xl mx-auto px-6">
+      <div class="ri frame px-8 md:px-16 py-14 md:py-16 text-center">
         <span class="plus tl"></span><span class="plus tr"></span>
         <span class="plus bl"></span><span class="plus br"></span>
         <h2 class="ri font-hero text-3xl md:text-5xl tracking-tight leading-[1.05] mb-4" style="font-weight:600;">
@@ -186,12 +216,10 @@ import '../styles/global.css';
           </button>
         </div>
       </div>
+      <footer class="absolute bottom-0 left-0 right-0 text-center text-xs text-[var(--muted)] px-6 py-6">
+        <p>2026 remindy · powered by <a href="https://supermemory.ai" class="text-[var(--ink)] hover:opacity-70 transition-opacity underline underline-offset-2 decoration-[var(--color-line)]">supermemory.ai</a></p>
+      </footer>
     </section>
-
-    <!-- Footer -->
-    <footer class="relative z-10 w-full max-w-4xl mx-auto text-center text-xs text-[var(--muted)] px-6 py-8">
-      <p>2026 remindy · powered by <a href="https://supermemory.ai" class="text-[var(--ink)] hover:opacity-70 transition-opacity underline underline-offset-2 decoration-[var(--color-line)]">supermemory.ai</a></p>
-    </footer>
 
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script is:inline>
