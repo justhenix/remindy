@@ -66,3 +66,16 @@ npm run build
 node dist/bin/remindy.js doctor
 node dist/bin/remindy.js init --seed
 ```
+
+## Uninstall
+
+```bash
+npx remindy uninstall
+```
+
+This reverses `init` in every detected editor:
+
+- Removes the `remindy` entry from the MCP config (`.kiro/settings/mcp.json`, `.cursor/mcp.json`, `.windsurf/mcp.json`, or `.agents/mcp_config.json`).
+- Strips the rule block between `<!-- remindy -->` and `<!-- /remindy -->` from `AGENTS.md`, `CLAUDE.md`, or `.cursorrules`.
+
+Then reload your editor. Your stored standards stay in Supermemory Local; clear them from the [dashboard](/docs/dashboard/) for a clean slate, or run `npm rm -g remindy` if you installed globally.

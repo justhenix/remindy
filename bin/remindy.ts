@@ -10,7 +10,7 @@
  */
 import type { Compressor } from '../src/capture/compressor.js';
 import { LlmCompressor } from '../src/capture/llm-compressor.js';
-import { runInit } from '../src/install/init.js';
+import { runInit, runUninstall } from '../src/install/init.js';
 import { describeBackend } from '../src/server/index.js';
 import { startDashboard } from '../src/dashboard/server.js';
 import { SupermemoryLocalStore } from '../src/memory/supermemory-local-store.js';
@@ -227,6 +227,9 @@ async function main(argv: string[]): Promise<void> {
     case 'seed':
       await seedStore();
       break;
+    case 'uninstall':
+      runUninstall(process.cwd());
+      break;
     case 'dashboard':
       await startDashboard();
       break;
@@ -234,7 +237,7 @@ async function main(argv: string[]): Promise<void> {
       configCommand(flags[0], flags.slice(1));
       break;
     default:
-      console.log('Usage: remindy <init [--seed] | doctor | seed | dashboard | config [set ...]>');
+      console.log('Usage: remindy <init [--seed] | uninstall | doctor | seed | dashboard | config [set ...]>');
       if (command !== undefined && command !== '--help' && command !== '-h') {
         process.exitCode = 1;
       }

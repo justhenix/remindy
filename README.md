@@ -76,6 +76,15 @@ Reload your editor and start coding. See the [docs](https://remindy.henix.my.id/
 | `remindy doctor` | Check config, LLM, Supermemory; print active backend |
 | `remindy dashboard` | Local web UI at `http://localhost:3456` |
 | `remindy config [set]` | View or set the compression provider (BYOK) |
+| `remindy uninstall` | Remove the MCP entry and project rule (stored rules stay) |
+
+## Uninstall
+
+```bash
+npx remindy uninstall
+```
+
+Removes the `remindy` MCP entry and the project rule block from every detected editor. Your stored standards stay in Supermemory Local; clear them from `npx remindy dashboard`, or run `npm rm -g remindy` if you installed globally.
 
 ## What runs where
 

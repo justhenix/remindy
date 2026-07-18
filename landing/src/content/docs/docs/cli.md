@@ -13,6 +13,7 @@ as an MCP server.
 | `remindy doctor` | Check config, LLM, and Supermemory; print the active backend |
 | `remindy dashboard` | Launch the local dashboard at `http://localhost:3456` |
 | `remindy config [set]` | View or set the compression provider (see [BYOK](/docs/byok/)) |
+| `remindy uninstall` | Remove the MCP entry and project rule (stored rules stay) |
 
 ## Examples
 

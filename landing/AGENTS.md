@@ -1,4 +1,4 @@
-# AGENTS.md, remindy landing + docs
+# CLAUDE.md, remindy landing + docs
 
 Astro + Starlight site: marketing landing at `/`, documentation at `/docs`. Deploys to [remindy.henix.my.id](https://remindy.henix.my.id) via Vercel on push to `main`.
 

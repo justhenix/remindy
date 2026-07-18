@@ -204,3 +204,79 @@ export function runInit(projectDir: string, opts: InitOptions = {}): void {
   console.log('');
   console.log(`Server: ${serverPath}`);
 }
+
+// ---------------------------------------------------------------------------
+// Uninstall (reverses init: strips the MCP entry and the project rule)
+// ---------------------------------------------------------------------------
+
+type RemoveStatus = 'removed' | 'absent' | 'not-configured';
+
+/** Remove the remindy entry from one client's MCP config. */
+function removeMcpConfig(projectDir: string, client: McpClient): RemoveStatus {
+  const configFile = resolve(projectDir, client.configPath);
+  if (!existsSync(configFile)) return 'not-configured';
+
+  let existing: Record<string, unknown>;
+  try {
+    existing = JSON.parse(readFileSync(configFile, 'utf8'));
+  } catch {
+    return 'not-configured';
+  }
+
+  const servers = existing[SERVERS_KEY] as Record<string, unknown> | undefined;
+  if (!servers || !('remindy' in servers)) return 'absent';
+
+  delete servers['remindy'];
+  // Drop the mcpServers key entirely if remindy was the only entry.
+  if (Object.keys(servers).length === 0) delete existing[SERVERS_KEY];
+  else existing[SERVERS_KEY] = servers;
+
+  writeFileSync(configFile, JSON.stringify(existing, null, 2) + '\n', 'utf8');
+  return 'removed';
+}
+
+/** Strip the remindy rule block from the project's rules file, if present. */
+function removeProjectRule(projectDir: string): string | null {
+  for (const name of RULE_FILES) {
+    const candidate = resolve(projectDir, name);
+    if (!existsSync(candidate)) continue;
+    const content = readFileSync(candidate, 'utf8');
+    if (!content.includes(RULE_MARKER)) continue;
+    writeFileSync(candidate, stripRuleBlock(content).trimEnd() + '\n', 'utf8');
+    return `cleaned ${name}`;
+  }
+  return null;
+}
+
+/** `remindy uninstall`, removes the MCP entry and rule block. Leaves stored rules. */
+export function runUninstall(projectDir: string): void {
+  console.log('remindy uninstall');
+  console.log('');
+
+  console.log('MCP server:');
+  let removed = 0;
+  for (const client of CLIENTS) {
+    const status = removeMcpConfig(projectDir, client);
+    if (status === 'removed') {
+      console.log(`  ✓ ${client.name}: removed from ${client.configPath}`);
+      removed++;
+    } else if (status === 'absent') {
+      console.log(`  · ${client.name}: no remindy entry`);
+    } else {
+      console.log(`  · ${client.name}: not configured`);
+    }
+  }
+  if (removed === 0) console.log('  · nothing to remove');
+  console.log('');
+
+  console.log('Project rule:');
+  const ruleResult = removeProjectRule(projectDir);
+  console.log(ruleResult ? `  ✓ ${ruleResult}` : '  · no remindy rule block found');
+  console.log('');
+
+  console.log('Your stored standards still live in Supermemory Local.');
+  console.log('  Clear them from the dashboard for a clean slate:  npx remindy dashboard');
+  console.log('  Remove the package if installed globally:         npm rm -g remindy');
+  console.log('');
+  console.log('Reload your editor so it drops the MCP server.');
+}
