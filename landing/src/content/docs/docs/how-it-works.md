@@ -23,7 +23,7 @@ been corrected on it and drives ranking.
 | `TAG` | One of `UI`, `COPY`, `CODE`, `COMMIT`, `SEC`, `REQ`, `PERF` |
 | `anti-pattern` | The habit to avoid |
 | `fix` | The concrete thing to do instead |
-| `×N` | Burn count: how often it was corrected |
+| `×N` | **Burn count**: times you've been corrected on this rule. Higher burns rank higher in recall. |
 
 Examples:
 

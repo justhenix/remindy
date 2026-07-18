@@ -42,6 +42,8 @@ Not a CLI you babysit; it's an MCP server your editor spawns.
 
 Rule format: `[TAG] anti-pattern → fix (×N)` &nbsp;·&nbsp; `TAG ∈ {UI, COPY, CODE, COMMIT, SEC, REQ, PERF}`
 
+`×N` is the **burn count**: how many times you've been corrected on that rule. More burns means it ranks higher in recall, so your most-repeated mistakes surface first.
+
 ```text
 [CODE] invented APIs, guessed signatures → verify against the docs first (×4)
 [COPY] "delve/seamless/robust" LLM slop → plain, concrete language (×2)

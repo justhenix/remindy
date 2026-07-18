@@ -16,3 +16,9 @@ A local control room for your taste pack:
 - The [BYOK](/docs/byok/) provider panel.
 
 Click **Tour** in the dashboard for a guided walkthrough.
+
+## What's a "burn"?
+
+A **burn** is one time you corrected the agent on a rule. Every correction bumps that
+rule's count (`×N`). The **Total Burns** stat sums them across all rules, and higher-burn
+rules rank first in recall, so your most-repeated mistakes are the ones the agent sees.

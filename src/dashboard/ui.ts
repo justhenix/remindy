@@ -184,7 +184,7 @@ export function getHtml(): string {
     <div class="stats-strip frame" id="tour-stats">
       <span class="plus tl"></span><span class="plus tr"></span><span class="plus bl"></span><span class="plus br"></span>
       <div class="stat"><div class="stat-top"><span class="stat-mark"></span><span class="stat-label">Rules</span></div><span class="stat-val" id="stat-total-rules">0</span></div>
-      <div class="stat"><div class="stat-top"><span class="stat-mark"></span><span class="stat-label">Total Burns</span></div><span class="stat-val" id="stat-total-burns">0</span></div>
+      <div class="stat" title="A burn = one time you corrected the agent on a rule. Totalled across all rules."><div class="stat-top"><span class="stat-mark"></span><span class="stat-label">Total Burns</span></div><span class="stat-val" id="stat-total-burns">0</span></div>
       <div class="stat"><div class="stat-top"><span class="stat-mark"></span><span class="stat-label">Tokens / Recall</span></div><span class="stat-val" id="stat-avg-tokens">0</span></div>
       <div class="stat"><div class="stat-top"><span class="stat-mark"></span><span class="stat-label">Top Tag</span></div><span class="stat-val" id="stat-top-tag">-</span></div>
     </div>
@@ -283,7 +283,7 @@ export function getHtml(): string {
             <th id="th-tag" style="width:90px;">Tag</th>
             <th id="th-antipattern">Anti-pattern</th>
             <th id="th-fix">Fix</th>
-            <th id="th-burns" style="width:72px; text-align:center;">Burns</th>
+            <th id="th-burns" style="width:72px; text-align:center;" title="Times you've corrected the agent on this rule. Higher burns rank first in recall.">Burns</th>
             <th style="width:40px;"></th>
           </tr></thead>
           <tbody id="rules-tbody"></tbody>
@@ -545,7 +545,7 @@ export function getHtml(): string {
           { element: '#tour-capture', popover: { title: 'Capture', description: 'Save one correction as a reusable rule.' } },
           { element: '#tour-recall', popover: { title: 'Recall', description: 'Preview rules sent before code is written.' } },
           { element: '#tour-provider', popover: { title: 'BYOK', description: 'Use OpenAI, Claude, b.ai, or Ollama. Saved in .env.' } },
-          { element: '#tour-rules', popover: { title: 'Taste pack', description: 'Edit rules. Higher burns rank first.' } }
+          { element: '#tour-rules', popover: { title: 'Taste pack', description: 'Your standards. Burns = times you corrected the agent on a rule; higher burns rank first.' } }
         ]
       });
       d.drive();
