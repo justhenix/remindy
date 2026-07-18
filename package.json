@@ -2,6 +2,24 @@
   "name": "remindy",
   "version": "0.1.0",
   "description": "The portable taste & standards layer for AI coding agents.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "coding-agent",
+    "supermemory",
+    "standards",
+    "code-review",
+    "cursor",
+    "claude"
+  ],
+  "homepage": "https://remindy.henix.my.id",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justhenix/remindy.git"
+  },
+  "bugs": "https://github.com/justhenix/remindy/issues",
+  "author": "Henix",
   "type": "module",
   "bin": {
     "remindy": "dist/bin/remindy.js"
@@ -12,7 +30,8 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "dev": "node dist/src/server/index.js"
+    "dev": "node dist/src/server/index.js",
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=18"

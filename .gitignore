@@ -36,3 +36,6 @@ Thumbs.db
 coverage/
 .vitest/
 demo/
+
+# npm auth (never commit)
+.npmrc

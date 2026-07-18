@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="misc/dark_banner.svg">
-  <img alt="remindy" src="misc/white_banner.svg" width="600">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/justhenix/remindy/main/misc/dark_banner.svg">
+  <img alt="remindy" src="https://raw.githubusercontent.com/justhenix/remindy/main/misc/white_banner.svg" width="600">
 </picture>
 
 ### The portable taste &amp; standards layer for AI coding agents
