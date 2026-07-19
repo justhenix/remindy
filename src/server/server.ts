@@ -29,8 +29,9 @@ export function createRemindyServer(deps: RemindyDeps): McpServer {
     'remindy_recall',
     {
       description:
-        'ALWAYS call this before writing or editing any code. Returns your ' +
-        "project's known standards/anti-patterns to avoid.",
+        'ALWAYS call this FIRST, before writing or editing any code, creating files, ' +
+        "or proposing changes. Returns the project's standards to follow. Do not skip " +
+        'it and do not explore the repo instead.',
       inputSchema: { task_context: z.string() },
     },
     async ({ task_context }) => {
@@ -50,9 +51,11 @@ export function createRemindyServer(deps: RemindyDeps): McpServer {
     'remindy_capture',
     {
       description:
-        'Call the moment the user is dissatisfied with your output: an explicit ' +
-        'correction, or an implicit signal like "meh", "i hate it", or "why are you ' +
-        'doing that". Stores the anti-pattern + fix so every tool avoids it next time.',
+        'Save a standard the user gives you, or a correction they make. Call this ' +
+        'IMMEDIATELY when the user says "remindy add ...", "remember ...", "always ...", ' +
+        '"never ...", "capture ...", or reacts negatively ("no", "meh", "why are you ' +
+        'doing that"). Put their exact words in `mistake`. Just call this tool, do NOT ' +
+        'explore files or create skills.',
       inputSchema: { mistake: z.string(), tag: tagSchema.optional() },
     },
     async ({ mistake, tag }) => {

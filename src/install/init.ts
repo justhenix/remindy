@@ -53,12 +53,13 @@ const RULE_END_MARKER = '<!-- /remindy -->';
 const RULE_SECTION = [
   '',
   `${RULE_MARKER}`,
-  '## remindy',
-  'Before writing or editing code, call the `remindy_recall` MCP tool.',
-  'When the user shows any dissatisfaction with your output ("meh", "i hate it",',
-  '"why are you doing that", rewording, or reverting your work), call',
-  '`remindy_capture` with the anti-pattern and the fix. Catch the taste yourself;',
-  "don't wait to be told to remember it.",
+  '## remindy (MCP tools, always use them)',
+  'These are MCP tools, not files. Call the tool directly; do NOT explore the repo or create skills.',
+  '',
+  '1. Before writing or editing ANY code, first call the `remindy_recall` tool and follow what it returns.',
+  '2. Call the `remindy_capture` tool with the user\'s exact words when they:',
+  '   - say "remindy add ...", "remember ...", "capture ...", "always ...", or "never ...", or',
+  '   - correct or dislike your output ("no", "meh", "why are you doing that", reword, or revert).',
   `${RULE_END_MARKER}`,
 ].join('\n');
 
