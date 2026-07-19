@@ -23,12 +23,24 @@ import {
   viewLlmConfig,
 } from '../src/config/index.js';
 import { writeEnvVars } from '../src/config/env-file.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // printInit stub removed, real implementation lives in src/install/init.ts.
 
 /** Never reveal secret values, only whether they are present. */
 function mask(value: string | undefined): string {
   return value ? 'set' : 'unset';
+}
+
+/** Installed version, read from package.json (bin lives in dist/bin, root is ../../). */
+function getVersion(): string {
+  try {
+    const pkgPath = resolve(import.meta.dirname, '../../package.json');
+    return (JSON.parse(readFileSync(pkgPath, 'utf8')).version as string) || 'unknown';
+  } catch {
+    return 'unknown';
+  }
 }
 
 function errMessage(err: unknown): string {
@@ -248,8 +260,13 @@ async function main(argv: string[]): Promise<void> {
     case 'config':
       configCommand(flags[0], flags.slice(1));
       break;
+    case 'version':
+    case '--version':
+    case '-v':
+      console.log(`remindy ${getVersion()}`);
+      break;
     default:
-      console.log('Usage: remindy <init [--seed] | uninstall | doctor | seed | dashboard | config [set ...]>');
+      console.log('Usage: remindy <init [--seed] | uninstall | doctor | seed | dashboard | config [set ...] | version>');
       if (command !== undefined && command !== '--help' && command !== '-h') {
         process.exitCode = 1;
       }
