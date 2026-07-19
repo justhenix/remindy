@@ -7,6 +7,26 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { homedir } from 'node:os';
+
+/** User's home directory, resolved once. */
+const HOME = homedir();
+
+/**
+ * VS Code's per-user config directory, where the user-profile `mcp.json` lives.
+ * Windows: %APPDATA%\Code\User ; macOS: ~/Library/Application Support/Code/User ;
+ * Linux: ~/.config/Code/User.
+ */
+function vscodeUserDir(): string {
+  if (process.platform === 'win32') {
+    const appData = process.env.APPDATA ?? resolve(HOME, 'AppData/Roaming');
+    return resolve(appData, 'Code/User');
+  }
+  if (process.platform === 'darwin') {
+    return resolve(HOME, 'Library/Application Support/Code/User');
+  }
+  return resolve(HOME, '.config/Code/User');
+}
 
 // ---------------------------------------------------------------------------
 // MCP client definitions
@@ -23,15 +43,71 @@ interface McpClient {
    * VS Code / Copilot uses `{ "servers": { name: { type, command, args } } }`.
    */
   format: 'mcpServers' | 'vscode';
+  /**
+   * Absolute path whose existence signals the client is installed for this user.
+   * Used to decide whether to register remindy at the user/global level so that
+   * EVERY workspace (including brand-new empty folders) picks it up.
+   */
+  globalDetect: string;
+  /** Absolute path to the client's user-level MCP config file. */
+  globalConfig: string;
 }
 
 const CLIENTS: McpClient[] = [
-  { name: 'Kiro', detectDir: '.kiro', configPath: '.kiro/settings/mcp.json', format: 'mcpServers' },
-  { name: 'Cursor', detectDir: '.cursor', configPath: '.cursor/mcp.json', format: 'mcpServers' },
-  { name: 'Windsurf', detectDir: '.windsurf', configPath: '.windsurf/mcp.json', format: 'mcpServers' },
-  { name: 'Antigravity', detectDir: '.agents', configPath: '.agents/mcp_config.json', format: 'mcpServers' },
-  { name: 'GitHub Copilot', detectDir: '.vscode', configPath: '.vscode/mcp.json', format: 'vscode' },
-  { name: 'Claude Code', detectDir: '.claude', configPath: '.mcp.json', format: 'mcpServers' },
+  {
+    name: 'Kiro',
+    detectDir: '.kiro',
+    configPath: '.kiro/settings/mcp.json',
+    format: 'mcpServers',
+    globalDetect: resolve(HOME, '.kiro'),
+    globalConfig: resolve(HOME, '.kiro/settings/mcp.json'),
+  },
+  {
+    name: 'Cursor',
+    detectDir: '.cursor',
+    configPath: '.cursor/mcp.json',
+    format: 'mcpServers',
+    globalDetect: resolve(HOME, '.cursor'),
+    globalConfig: resolve(HOME, '.cursor/mcp.json'),
+  },
+  {
+    name: 'Windsurf',
+    detectDir: '.windsurf',
+    configPath: '.windsurf/mcp.json',
+    format: 'mcpServers',
+    globalDetect: resolve(HOME, '.codeium/windsurf'),
+    globalConfig: resolve(HOME, '.codeium/windsurf/mcp_config.json'),
+  },
+  {
+    // Antigravity reads workspace `.agents/mcp_config.json` AND global
+    // `~/.gemini/config/mcp_config.json`. The global one is what makes a fresh
+    // folder work without running init inside it.
+    name: 'Antigravity',
+    detectDir: '.agents',
+    configPath: '.agents/mcp_config.json',
+    format: 'mcpServers',
+    globalDetect: resolve(HOME, '.gemini'),
+    globalConfig: resolve(HOME, '.gemini/config/mcp_config.json'),
+  },
+  {
+    // VS Code Copilot reads workspace `.vscode/mcp.json` AND the user-profile
+    // `mcp.json` (Windows: %APPDATA%\Code\User\mcp.json).
+    name: 'GitHub Copilot',
+    detectDir: '.vscode',
+    configPath: '.vscode/mcp.json',
+    format: 'vscode',
+    globalDetect: vscodeUserDir(),
+    globalConfig: resolve(vscodeUserDir(), 'mcp.json'),
+  },
+  {
+    // Claude Code stores user-scope servers in ~/.claude.json (mcpServers).
+    name: 'Claude Code',
+    detectDir: '.claude',
+    configPath: '.mcp.json',
+    format: 'mcpServers',
+    globalDetect: resolve(HOME, '.claude.json'),
+    globalConfig: resolve(HOME, '.claude.json'),
+  },
 ];
 
 /** Top-level key holding servers, and the entry shape, per client format. */
@@ -124,6 +200,41 @@ function writeMcpConfig(
 }
 
 /**
+ * Write (or merge) the remindy entry into a client's USER-LEVEL MCP config.
+ * This is what makes remindy available in every workspace, including fresh
+ * empty folders, with no per-folder init. Only runs for clients that are
+ * actually installed (detected via `globalDetect`).
+ * Returns true if written, false if the client is not installed.
+ */
+function writeGlobalMcpConfig(client: McpClient, serverPath: string): boolean {
+  if (!existsSync(client.globalDetect)) {
+    return false;
+  }
+
+  const configFile = client.globalConfig;
+  let existing: Record<string, unknown> = {};
+
+  if (existsSync(configFile)) {
+    try {
+      const raw = readFileSync(configFile, 'utf8').trim();
+      // Empty files are common (e.g. Antigravity ships an empty global config).
+      if (raw) existing = JSON.parse(raw);
+    } catch {
+      // Corrupt JSON: preserve nothing, overwrite with a valid config.
+    }
+  }
+
+  const key = serversKeyFor(client);
+  const servers = (existing[key] as Record<string, unknown>) ?? {};
+  servers['remindy'] = serverEntryFor(client, serverPath);
+  existing[key] = servers;
+
+  mkdirSync(dirname(configFile), { recursive: true });
+  writeFileSync(configFile, JSON.stringify(existing, null, 2) + '\n', 'utf8');
+  return true;
+}
+
+/**
  * Append the one-line remindy rule to the project's agent rules file.
  * Returns a human-readable status string.
  */
@@ -172,21 +283,42 @@ export function runInit(projectDir: string, opts: InitOptions = {}): void {
   console.log('remindy init');
   console.log('');
 
-  // 1. MCP registration
-  console.log('MCP server registration:');
+  // 1. Global (user-level) registration. This is the important one: it makes
+  //    remindy available in EVERY workspace, including brand-new empty folders,
+  //    with no per-folder init. Only installed clients are touched.
+  console.log('MCP server registration (user-level, applies to every folder):');
+  let globalRegistered = 0;
+  for (const client of CLIENTS) {
+    if (writeGlobalMcpConfig(client, serverPath)) {
+      console.log(`  ✓ ${client.name} -> ${client.globalConfig}`);
+      globalRegistered++;
+    } else {
+      console.log(`  · ${client.name}: not installed, skipped`);
+    }
+  }
+  if (globalRegistered === 0) {
+    console.log('  ⚠ No supported clients detected on this machine.');
+    console.log('    Manually add to your client\'s MCP config:');
+    console.log(`    { "command": "node", "args": ["${serverPath}"] }`);
+  } else {
+    console.log('  Restart your editor so it loads the server; new folders inherit it.');
+  }
+  console.log('');
+
+  // 2. Workspace registration for THIS repo (a booster; not required now that
+  //    the server is registered globally, but harmless and explicit).
+  console.log('MCP server registration (this workspace):');
   let registered = 0;
   for (const client of CLIENTS) {
     if (writeMcpConfig(projectDir, client, serverPath)) {
       console.log(`  ✓ ${client.name} -> ${client.configPath}`);
       registered++;
     } else {
-      console.log(`  · ${client.name}: not detected, skipped`);
+      console.log(`  · ${client.name}: not used here, skipped`);
     }
   }
   if (registered === 0) {
-    console.log('  ⚠ No supported clients detected.');
-    console.log('    Manually add to your client\'s MCP config:');
-    console.log(`    { "command": "node", "args": ["${serverPath}"] }`);
+    console.log('  · no client folders in this workspace (that is fine, global covers it)');
   }
   console.log('');
   console.log('  Other tools (one line, config is global for these):');
@@ -256,6 +388,32 @@ function removeMcpConfig(projectDir: string, client: McpClient): RemoveStatus {
   return 'removed';
 }
 
+/** Remove the remindy entry from one client's USER-LEVEL MCP config. */
+function removeGlobalMcpConfig(client: McpClient): RemoveStatus {
+  const configFile = client.globalConfig;
+  if (!existsSync(configFile)) return 'not-configured';
+
+  let existing: Record<string, unknown>;
+  try {
+    const raw = readFileSync(configFile, 'utf8').trim();
+    if (!raw) return 'not-configured';
+    existing = JSON.parse(raw);
+  } catch {
+    return 'not-configured';
+  }
+
+  const key = serversKeyFor(client);
+  const servers = existing[key] as Record<string, unknown> | undefined;
+  if (!servers || !('remindy' in servers)) return 'absent';
+
+  delete servers['remindy'];
+  if (Object.keys(servers).length === 0) delete existing[key];
+  else existing[key] = servers;
+
+  writeFileSync(configFile, JSON.stringify(existing, null, 2) + '\n', 'utf8');
+  return 'removed';
+}
+
 /** Strip the remindy rule block from the project's rules file, if present. */
 function removeProjectRule(projectDir: string): string | null {
   for (const name of RULE_FILES) {
@@ -274,8 +432,22 @@ export function runUninstall(projectDir: string): void {
   console.log('remindy uninstall');
   console.log('');
 
-  console.log('MCP server:');
+  console.log('MCP server (user-level):');
   let removed = 0;
+  for (const client of CLIENTS) {
+    const status = removeGlobalMcpConfig(client);
+    if (status === 'removed') {
+      console.log(`  ✓ ${client.name}: removed from ${client.globalConfig}`);
+      removed++;
+    } else if (status === 'absent') {
+      console.log(`  · ${client.name}: no remindy entry`);
+    } else {
+      console.log(`  · ${client.name}: not configured`);
+    }
+  }
+  console.log('');
+
+  console.log('MCP server (this workspace):');
   for (const client of CLIENTS) {
     const status = removeMcpConfig(projectDir, client);
     if (status === 'removed') {
